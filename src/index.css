@@ -30,11 +30,241 @@ body {
   color: #353535
 }
 .container {
-  max-width: 80vw;
-  margin: 30px auto;
+  max-width: 90vw;
+  margin: 30px auto; 
+}
+/*Pagination*/
+.pagination{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin-top: 1rem;
+  color:#000000DE
+}
+.paginat-arrows-active:hover{
+cursor: pointer;
+transform: scale(1.5);
+border-radius: 50%;
+background-color: #f0f0f0;
+}
+.paginat-arrows-active:active{
+  background-color: #c2c0c0;
+  box-shadow: 0px 0px 10px 0px #f0f0f0, -5px -5px 50px #4c4c4c;
+  }
+.paginat-arrows-disable{
+  color: #c2c0c0;
+  }
+.paginat-arrows-down:hover{
+    cursor: pointer;
+    transform: scale(1.3);
+    }
+.paginat-modal{
+  position: absolute;
+  text-align: center;
+  left: 100%;
+  width: 4rem;
+  list-style: none;
+  background: #f7f7f7;
+  box-shadow: 5px 5px 50px #9e9e9e, -5px -5px 50px #ffffff
+}
+.paginat-modal h6{
+font-weight: 400;
+}
+.paginat-modal li{
+  margin-top: 0.1rem;
+  font-size: 1.2rem;
+}
+.paginat-modal li:hover{
+  background: #e2e2e2;
+}
+/**Table**/
+table{
+  border-spacing: 0;
+  width: 100%;
+}
+.tableContainer{
+  font-size: 0.75rem;
+  padding: 1rem;
+  border-radius: 30px;
+  background: #f2f2f2;
+  box-shadow: inset -2px -3px 3px #bcbcbc9d,
+  -1px -1px 6px 1px #fff;
+overflow: auto;
+}
+th{
+  font-weight: 500;
+  
+}
+td,th{
+  /* max-width: 30px; */
+  /* border-bottom: #d6d6d6 thin solid; */
+  text-align: left;
+  height: 1rem;
+  padding: 0.7rem;
+  white-space: nowrap
+}
+tbody tr:first-child{
+  border-radius: 10px 10px 0 0;
+}
+tbody tr:last-child{
+  border-radius:0 0 10px 10px ;
+}
+tbody tr{
+  box-shadow: inset 0px 1px 3px #bcbcbc9d, -1px -1px 6px 1px #fff
+
+}
+tbody{
+  color: #3e83a5;
+  border-radius: 10px;
+  background-color: #f7f7f7;
+  box-shadow: inset -2px -3px 3px #bcbcbc9d,
+   -1px -1px 6px 1px #fff;
+}
+thead {
+  color:#37708d;
+  border-radius: 10px;
+  background-color: #EAEAEC;
+  box-shadow: inset -2px -3px 3px #bcbcbc9d,
+  -1px -1px 6px 1px #fff;
+}
+@keyframes shadow-inset-center {
+  50% {
+            opacity: 0.5;
+  }
+}
+.dtgToolBtn:hover{
+  cursor: pointer;
+  transform: scale(1.3);
+}
+.setting-modal{
+  position: fixed;
+  display: flex;
+  height: 100%;
+  z-index: 1;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background-color: #e9e9eb4f;
+  color: #117fb6;
+}
+.setting-modal-container{
+    height: 87vh;
+    max-height: 87vh;
+    max-width: 60vw;
+    width: 100%;
+    overflow: hidden;
+    padding:3vh;
+    border-radius: 30px;
+    background: #f2f2f2;
+    box-shadow: inset -2px -3px 3px #bcbcbc9d,
+    -1px -1px 6px 1px #fff;
+}
+  .setting-modal-body{
+    display: flex;
+    justify-content: space-between;
+    overflow-x: auto;
+     max-height: 85vh;
+
+}
+.select-tile-selection{
+  flex: 0 0 48%;
+  max-width: 49%;
+  flex-direction: column;
+  height: 72vh;
+  max-height: 72vh;
+}
+.select-tile-container{
   overflow: auto;
-  min-height: 300px;
-  border: 1px solid #808080;
-  padding: 30px;
+  padding: 1rem;
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 20px;
+  background-color: #f7f7f7;
+  box-shadow: inset -2px -3px 3px #bcbcbc9d,
+   -1px -1px 6px 1px #fff;
+  border: none;
+}
+.select-tile-container li{
+  display: flex;
+  justify-content: space-between;
+  box-shadow: inset -2px -3px 3px #bcbcbc9d,
+   -1px -1px 6px 1px #fff;
+  }
+.select-tile{
+  background-color: #EAEAEC;
+  cursor: grab;
+  margin: 0.5rem;
+  padding: 0.5rem;
   border-radius: 5px;
+}
+.select-tile:hover{
+    opacity:0.8;
+    }
+.select-tile-number{
+      background-color: #fff;
+      border-radius: 50%;
+      width: 1rem;
+      text-align: center;
+    }
+.select-tile-selected:hover{
+      background-color: #abbdd8b0;
+    } 
+.select-tile-value-ico{
+      text-align: center;
+      margin-left: 5px;
+      padding: 3px;
+      display: inline-block;
+      border-radius: 4px;
+      box-shadow: inset -2px -2px 1px #bcbcbc9d,
+      -1px -1px 1px 0px #fff;
+      fill:#2D5B72;
+    }
+    .select-tile-value-ico:hover{
+      cursor: pointer;
+      transform: scale(1.1);
+      }
+      .select-tile-value-ico-selected:hover{
+        cursor: pointer;
+        transform: scale(1.1);
+      }
+      .select-tile-value-ico-selected{
+        border-radius: 3px;  
+        text-align: center;
+        margin-left: 5px;
+        padding: 3px;
+        display: inline-block;
+        box-shadow: inset 2px 2px 3px #b6b6b6,
+        inset -2px -2px 3px #f6f6f6;
+        fill: #117fb6;
+      }
+        .select-tile-value-ico-disabled{
+          cursor: not-allowed;          
+          border-radius: 5px;  
+          text-align: center;
+          margin-left: 5px;
+          padding: 3px;
+          display: inline-block;
+          background-color: #e9e9eb4f;
+          fill:#838383
+        } 
+        /*Select box*/
+.setting-modal label{
+  margin: 0 1rem;
+}
+.setting-modal select{
+  border-radius: 10%;
+  border:none
+}
+
+/*Pivot table*/
+.blank-row{
+  background-color: #f7f7f7;
+  border-right: #dddddd solid 1px;
+  width: 5px;
+}
+.blank-row-chevron{
+  background-color: #f7f7f7;
+  /* border-right: #dddddd solid 1px; */
 }

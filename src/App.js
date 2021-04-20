@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import DtCtxProvider from './contexts/DtContext'
+import DataTable from "./components/dataTable/DataTable"
 
 const App = () => {
   const [countries, setCountries] = useState([])
@@ -25,10 +27,15 @@ const App = () => {
     return arr.flat().slice(1, 15)
   }
   return (
-    <div className="App">
-      <div className="container">
+    <DtCtxProvider>
+      <div className="App">
+        <div className="container">
+          <DataTable
+            items={countries}
+          />
+        </div>
       </div>
-    </div>
+    </DtCtxProvider>
   );
 }
 
