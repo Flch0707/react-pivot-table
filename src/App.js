@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import DtCtxProvider from './contexts/DtContext'
+import DtCtxProvider from './contexts/DtCtx'
+import PtSetCtxProvider from './contexts/PtSetCtx'
 import DataTable from "./components/dataTable/DataTable"
 
 const App = () => {
@@ -28,13 +29,15 @@ const App = () => {
   }
   return (
     <DtCtxProvider>
-      <div className="App">
-        <div className="container">
-          <DataTable
-            items={countries}
-          />
+      <PtSetCtxProvider>
+        <div className="App">
+          <div className="container">
+            <DataTable
+              items={countries}
+            />
+          </div>
         </div>
-      </div>
+      </PtSetCtxProvider>
     </DtCtxProvider>
   );
 }

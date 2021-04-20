@@ -1,9 +1,9 @@
 import { FiChevronLeft, FiChevronRight, FiChevronDown } from 'react-icons/fi'
 import { useState, useEffect, useRef, useContext } from 'react'
-import { DtContext } from '../../contexts/DtContext'
+import { DtCtx } from '../../contexts/DtCtx'
 import Modal from './Modal'
 const Pagination = () => {
-    const { onPageChange, state } = useContext(DtContext)
+    const { onPageChange, state } = useContext(DtCtx)
     const [showModal, setshowModal] = useState(false)
     const ref = useRef(null);
     const handleClickOutside = (event) => {

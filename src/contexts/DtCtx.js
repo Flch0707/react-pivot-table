@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react';
 
-export const DtContext = createContext();
+export const DtCtx = createContext();
 const initialState = {
     items: [],
     pageItems: [],
@@ -89,7 +89,7 @@ const DtCtxProvider = (props) => {
         })
     }
     return (
-        <DtContext.Provider
+        <DtCtx.Provider
             value={{
                 state,
                 onloadItems,
@@ -97,7 +97,7 @@ const DtCtxProvider = (props) => {
                 onChangeItemsPerPage
             }}>
             {props.children}
-        </DtContext.Provider>
+        </DtCtx.Provider>
     );
 }
 
