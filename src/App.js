@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import DtCtxProvider from './contexts/DtCtx'
 import PtSetCtxProvider from './contexts/PtSetCtx'
-import DataTable from "./components/dataTable/DataTable"
+import PtCtxProvider from './contexts/PtCtx'
+import Dt from "./components/dataTable/Dt"
+import Pt from './components/pivotTable/Pt'
 
 const App = () => {
   const [countries, setCountries] = useState([])
@@ -30,13 +32,16 @@ const App = () => {
   return (
     <DtCtxProvider>
       <PtSetCtxProvider>
-        <div className="App">
-          <div className="container">
-            <DataTable
-              items={countries}
-            />
+        <PtCtxProvider>
+          <div className="App">
+            <div className="container">
+              <Dt
+                items={countries}
+              />
+              <Pt />
+            </div>
           </div>
-        </div>
+        </PtCtxProvider>
       </PtSetCtxProvider>
     </DtCtxProvider>
   );
