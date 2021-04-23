@@ -19,15 +19,7 @@ const App = () => {
   const fetchCountries = async () => {
     const res = await fetch('http://localhost:5000/countries')
     const data = await res.json()
-
-    const arr = data.map(el => {
-      return el.cities.map((city) => {
-        let a = { country: el.name, city: city.name, eu: el.eu, ...city }
-        delete a.name
-        return a
-      })
-    })
-    return arr.flat().slice(1, 15)
+    return data.slice(0, 10)
   }
   return (
     <DtCtxProvider>

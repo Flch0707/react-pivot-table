@@ -41,8 +41,8 @@ const PtCtxProvider = props => {
                 let rowValues = getData(data, valSelect)
                 let parent = {
                     id: String(grpSelect[0].value + p + (Math.round(Math.random() * 100000))),
-                    rowsDepth: 0,
-                    rowsLength: 0,
+                    colSpan: 0,
+                    rowSpan: 0,
                     text: p,
                     ancestor: ancestorIndex,
                     data: rowValues,
@@ -64,8 +64,8 @@ const PtCtxProvider = props => {
             console.log(rowValues)
             let obj = {
                 id: String(grp + cu + (Math.round(Math.random() * 100000))),
-                rowsDepth: 0,
-                rowsLength: 0,
+                colSpan: 0,
+                rowSpan: 0,
                 text: cu,
                 ancestor: ancestorIndex,
                 data: rowValues,
@@ -93,8 +93,8 @@ const PtCtxProvider = props => {
                     ancestor: ancestorIndex,
                     children: [],
                     showChildren: false,
-                    colsLength: 0,
-                    colsDepth: 0
+                    colSpan: 0,
+                    rowSpan: 0
                 }
                 if (grpSelect.length > 1) getColChildren(data, 1, grpSelect, parent, ancestorIndex)
                 return parent
@@ -114,8 +114,8 @@ const PtCtxProvider = props => {
                 ancestor: ancestorIndex,
                 children: [],
                 showChildren: false,
-                colsLength: 0,
-                colsDepth: 0
+                colSpan: 0,
+                rowSpan: 0
             }
             if (grpCurIdx < grpSelect.length - 1) {
                 getColChildren(dataChildren, grpCurIdx + 1, grpSelect, obj, ancestorIndex)
@@ -191,39 +191,39 @@ const PtCtxProvider = props => {
 
     // ROWS MANAGEMENT
     const toggleShowRowsChild = (id, ancestorIndex) => {
-        getRowsDepth(id, state.rowsArray[ancestorIndex])
-        getRowsLength(state.rowsArray[ancestorIndex])
+        getColSpan(id, state.rowsArray[ancestorIndex])
+        getRowSpan(state.rowsArray[ancestorIndex])
         setState({
             ...state,
-            rowsDepth: getMaxRowsDepth() + 1,
+            rowsDepth: getMaxColSpan() + 1,
         })
 
     }
-    const getRowsDepth = (id, node) => {
+    const getColSpan = (id, node) => {
         if (node.id === id) {
             node.showChildren = !node.showChildren
-            node.rowsLength = 0
+            node.rowSpan = 0
         }
-        node.showChildren ? node.rowsDepth = 1 : node.rowsDepth = 0
+        node.showChildren ? node.colSpan = 1 : node.colSpan = 0
         for (const child of node.children) {
-            let nodeDepth = getRowsDepth(id, child)
-            if (node.showChildren && child.rowsDepth) {
-                node.rowsDepth += nodeDepth
+            let nodeDepth = getColSpan(id, child)
+            if (node.showChildren && child.colSpan) {
+                node.colSpan += nodeDepth
             }
         }
-        return node.rowsDepth
+        return node.colSpan
     }
 
-    const getRowsLength = (node) => {
-        node.showChildren ? node.rowsLength = node.children.length : node.rowsLength = 0
+    const getRowSpan = (node) => {
+        node.rowSpan = node.showChildren ? node.children.length : 0
         for (const child of node.children) {
-            let nodeLength = getRowsLength(child)
-            node.rowsLength += nodeLength
+            let nodeLength = getRowSpan(child)
+            node.rowSpan += nodeLength
         }
-        return node.rowsLength
+        return node.rowSpan
     }
-    const getMaxRowsDepth = () => {
-        return state.rowsArray.length > 0 ? Math.max(...state.rowsArray.map(el => el.rowsDepth)) : 1
+    const getMaxColSpan = () => {
+        return state.rowsArray.length > 0 ? Math.max(...state.rowsArray.map(el => el.colSpan)) : 1
     }
 
     // HEADINGS MANAGEMENT
@@ -236,30 +236,30 @@ const PtCtxProvider = props => {
         })
     }
     const getColsLength = (node) => {
-        node.children.length > 0 && node.showChildren ? node.colsLength = node.children.length : node.colsLength = 0
+        node.colSpan = node.showChildren ? node.children.length : 0
         for (const child of node.children) {
             let nodeLength = getColsLength(child)
-            node.colsLength += nodeLength
+            node.colSpan += nodeLength
         }
-        return node.colsLength
+        return node.colSpan
     }
     const getColsDepth = (id = null, node) => {
         if (node.id === id) {
             node.showChildren = !node.showChildren
-            node.colsDepth = 0
+            node.rowSpan = 0
         }
-        node.showChildren ? node.colsDepth = 1 : node.colsDepth = 0
+        node.showChildren ? node.rowSpan = 1 : node.rowSpan = 0
         for (const child of node.children) {
             let nodeDepth = getColsDepth(id, child)
-            if (node.showChildren && child.colsDepth) {
-                node.colsDepth += nodeDepth
+            if (node.showChildren && child.rowSpan) {
+                node.rowSpan += nodeDepth
             }
         }
-        return node.colsDepth
+        return node.rowSpan
     }
 
     const getMaxColsDepth = () => {
-        return state.colsArray.length > 0 ? Math.max(...state.colsArray.map(el => el.colsDepth)) : 1
+        return state.colsArray.length > 0 ? Math.max(...state.colsArray.map(el => el.rowSpan)) : 1
     }
 
     return (

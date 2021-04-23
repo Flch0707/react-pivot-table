@@ -1,79 +1,89 @@
-import { FiChevronRight, FiChevronDown } from 'react-icons/fi'
+import PtRow from "./PtRow"
+import { PtCtx } from "../../contexts/PtCtx"
+import { PtSetCtx } from "../../contexts/PtSetCtx"
 import { useContext } from 'react'
-import { PtCtx } from '../../contexts/PtCtx'
-import { PtSetCtx } from '../../contexts/PtSetCtx'
-
 const PtHeader = () => {
-    const { toggleShowColChild, state: ptState } = useContext(PtCtx)
+    const { state: ptState } = useContext(PtCtx)
     const { state: stState } = useContext(PtSetCtx)
-    const getValuesHeader = () => {
-        return ptState.valueArray.map((v) => {
-            return <th >{v}</th>
-        })
+    class Header {
+        constructor({ text = null, className = null, colSpan = null, rowSpan = null, ico = null, node = null }) {
+            this.text = text
+            this.className = className
+            this.colSpan = colSpan
+            this.rowSpan = rowSpan
+            this.ico = ico
+            this.node = node
+        }
     }
     const getCols = () => {
         let objCols = {}
-        // create as many properties as there are subcolumns
+        // create as many properties as there are rows in the header
         stState.colSelection.forEach((col, i) => {
-            if (i < ptState.colsDepth) {
-                objCols[col.value] = [<th colSpan={ptState.rowsDepth} key={objCols[col.value] + i}></th>]
-                objCols[col.value + "Values"] = [<th colSpan={ptState.rowsDepth} key={objCols[col.value + "Values"] + i}></th>]
-            }
+            if (i < ptState.colsDepth) objCols[col.value] = [new Header({ colSpan: ptState.rowsDepth })]
         })
-        // Hydrate every props with values
-        ptState.colsArray && ptState.colsArray.forEach((col, i) => {
-            let obj = getColHeader(col, ptState.colsDepth)
-            objCols[col.selector] && objCols[col.selector].push(obj)
-            let arrVals = getValuesHeader()
-            arrVals && arrVals.forEach(v => objCols[col.selector + "Values"].push(v))
-
-            if (col.children.length > 0 && col.showChildren) {
-                getChildren(col, ptState.colsDepth, objCols)
-            }
+        // get values for each header
+        ptState.colsArray && ptState.colsArray.forEach((col) => {
+            objCols[col.selector] && objCols[col.selector].push(getColHeader(col, ptState.colsDepth))
+            // Look for children nodes and get the values
+            if (col.children.length > 0 && col.showChildren) getChildren(col, ptState.colsDepth, objCols)
         })
+        // add the sub values row
+        objCols["Values"] = getSubValues()
         // return array with obj values
         return Object.values(objCols)
     }
+
     const getChildren = (node, rowSpan, objCols) => {
         let accu = rowSpan -= 1
         node.children.forEach((col, i) => {
-            // let obj = <th key={col.id}>{String(col.text)}</th>
-            let obj = getColHeader(col, accu)
-            objCols[col.selector].push(obj)
-            if (i === node.children.length - 1) objCols[col.selector].push(<th className="blank-row" rowSpan={accu}>{node.text}</th>)
-            if (col.children.length > 0 && col.showChildren) {
-                getChildren(col, accu, objCols)
+            // Add the col value
+            objCols[col.selector].push(getColHeader(col, accu))
+            // add parent at the end of the selection
+            if (i === node.children.length - 1) {
+                objCols[col.selector].push(
+                    new Header({ text: String(node.text), className: "blank", colSpan: ptState.valueArray.length, rowSpan: accu !== 0 ? accu : 1 }))
             }
+            if (col.children.length > 0 && col.showChildren) getChildren(col, accu, objCols)
         })
     }
     const getColHeader = (node, rowSpan) => {
         if (node.children.length > 0) {
-            let arrow
             if (node.showChildren) {
-                arrow = <FiChevronDown />
-                return <>
-                    <th key={node.id + "Blank"} className="blank-row" colSpan={node.colsLength + 1} onClick={() => toggleShowColChild(node.id, node.ancestor)}>{arrow}{node.text}</th>
-                    {/* <th key={node.id} rowSpan={rowSpan} > {String(node.text)}</th> */}
-                </>
+                return new Header({ text: String(node.text), className: "blank-row", colSpan: (node.colSpan + 1) * ptState.valueArray.length, ico: "FiChevronDown", node: node })
             }
             else {
-                arrow = <FiChevronRight />
-                return <th key={node.id} rowSpan={rowSpan} onClick={() => toggleShowColChild(node.id, node.ancestor)}>{arrow} {String(node.text)}</th>
+                return new Header({ text: String(node.text), rowSpan: rowSpan !== 0 ? rowSpan : 1, colSpan: (node.colSpan + 1) * ptState.valueArray.length, ico: "FiChevronRight", node: node })
             }
         }
         else {
-            return <th rowSpan={rowSpan} colSpan={node.colsLength} >{String(node.text)}</th>
+            return new Header({ text: String(node.text), rowSpan: rowSpan !== 0 ? rowSpan : 1, colSpan: (node.colSpan + 1) * ptState.valueArray.length })
         }
+    }
+    // returns array of selected value to compute
+    const getSubValues = () => {
+        let valArr = ptState.valueArray.map((v) => {
+            return new Header({ text: v, className: "blank-row" })
+        })
+        let valRow = []
+        valRow = ptState.colsArray && ptState.colsArray.flatMap(col => {
+            let colVal = []
+            for (let i = 0; i <= col.colSpan; i++) {
+                for (let v of valArr) { colVal.push(v) }
+            }
+            return colVal
+        })
+        valRow.unshift(new Header({ colSpan: ptState.rowsDepth }))
+        return valRow
     }
     return (
         <thead>
-            {stState.colSelection && stState.colSelection.length > 0 && getCols().map((col, i) => {
-                return <tr key={i}>
-                    {col}
-                </tr>
-            })
-            }
-        </thead>)
+            {stState.colSelection && stState.colSelection.length > 0 && getCols().map((row, idx) =>
+                <PtRow
+                    key={idx}
+                    row={row} />
+            )}
+        </thead>
+    )
 }
 
 export default PtHeader

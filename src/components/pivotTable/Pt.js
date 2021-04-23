@@ -3,7 +3,7 @@ import { PtSetCtx } from '../../contexts/PtSetCtx'
 import { PtCtx } from '../../contexts/PtCtx'
 import { useEffect, useContext } from 'react'
 import PtHeader from './PtHeader'
-import Ptbody from './Ptbody'
+import PtBody from './PtBody'
 const PivotTable = () => {
     const { state: dtState } = useContext(DtCtx)
     const { state: stState } = useContext(PtSetCtx)
@@ -18,7 +18,7 @@ const PivotTable = () => {
         <div className='tableContainer'>
             <table>
                 <PtHeader></PtHeader>
-                <Ptbody></Ptbody>
+                <PtBody></PtBody>
             </table>
         </div>
 

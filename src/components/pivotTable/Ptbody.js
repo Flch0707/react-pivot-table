@@ -1,55 +1,69 @@
 import { useContext } from 'react'
-import { FiChevronRight, FiChevronDown } from 'react-icons/fi'
 import { PtCtx } from '../../contexts/PtCtx'
+import PtRow from './PtRow'
 
-const Ptbody = () => {
-    const { toggleShowRowsChild, state: ptState } = useContext(PtCtx)
-    const getRows = () => {
-        let arr = []
-        ptState.rowsArray && ptState.rowsArray.forEach((row) => {
-            arr.push(row && <tr key={row.id}>
-                <>{getRowHeader(row, ptState.rowsDepth)}</>
-                {row.data && row.data.map(data => {
-                    return <td>{data.value}</td>
-                })}
-            </tr>)
-            if (row.children.length > 0 && row.showChildren) {
-                getChildren(row.children, ptState.rowsDepth, row.rowsLength, arr)
-            }
-        })
-        return arr
+const PtBody = () => {
+    const { state: ptState } = useContext(PtCtx)
+    class Cell {
+        constructor({ text = null, className = null, colSpan = null, rowSpan = null, ico = null, node = null }) {
+            this.text = text
+            this.className = className
+            this.colSpan = colSpan
+            this.rowSpan = rowSpan
+            this.ico = ico
+            this.node = node
+        }
     }
 
-    const getChildren = (children, colspan, rowspan, arr) => {
-        let accu = colspan -= 1
-        children.forEach((child, i) => {
-            let obj = child && <tr key={child.id}>
-                {i === 0 && <td className="blank-row" rowspan={rowspan}></td>}
-                <>{getRowHeader(child, accu)}</>
-                {child.data.map(data => {
-                    return <td>{data.value}</td>
-                })}
-            </tr>
-            arr && arr.push(obj)
-            if (child.children.length > 0 && child.showChildren) {
-                getChildren(child.children, accu, child.rowsLength, arr)
+    const getRows = (nodes, colspan, rowSpan, isChild, rows) => {
+        let curColSpan = colspan -= 1
+        nodes.forEach((node, i) => {
+            let row = getRow(node, colspan, rowSpan, isChild && i === 0)
+            rows.push(row)
+            if (node.children.length > 0 && node.showChildren) {
+                getRows(node.children, curColSpan, node.rowSpan, true, rows)
             }
         })
     }
+
     const getRowHeader = (node, colSpan) => {
         if (node.children.length > 0) {
-            let arrow = node.showChildren ? <FiChevronDown /> : <FiChevronRight />
-            return <td colSpan={colSpan} onClick={() => toggleShowRowsChild(node.id, node.ancestor)}>{arrow} {String(node.text)}</td>
+            let arrow = node.showChildren ? "FiChevronDown" : "FiChevronRight"
+            return new Cell({ text: node.text, colSpan: colSpan, ico: arrow, node: node })
         }
         else {
-            return <td colSpan={colSpan} >{String(node.text)}</td>
+            return new Cell({ text: String(node.text), colSpan: colSpan })
         }
     }
+
+    const getRow = (node, colSpan, rowSpan, isChild) => {
+        let row = []
+        console.log(rowSpan, node.text)
+        if (isChild) {
+            row.push(new Cell({ className: "blank-row", rowSpan: rowSpan }))
+        }
+        row.push(getRowHeader(node, colSpan))
+        node.data && node.data.forEach(data => {
+            row.push(new Cell({ text: data.value }))
+        })
+        return row
+    }
+
+    const getTbody = () => {
+        let rows = []
+        getRows(ptState.rowsArray, ptState.rowsDepth + 1, null, false, rows)
+        return rows
+    }
+
     return (
         <tbody>
-            {getRows()}
+            {ptState.rowsArray.length > 0 && getTbody().map((row, idx) =>
+                <PtRow
+                    key={idx}
+                    row={row} />
+            )}
         </tbody>
     )
 }
 
-export default Ptbody
+export default PtBody

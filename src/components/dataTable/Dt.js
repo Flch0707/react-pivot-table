@@ -7,10 +7,8 @@ import DtSetBar from './DtSetBar'
 const DataTable = ({ items, CustomHeadings }) => {
     const { onloadItems, state } = useContext(DtCtx)
     useEffect(() => {
-        console.log("a")
         onloadItems(items, CustomHeadings)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [items, CustomHeadings])
 
     return (
         <div className='tableContainer'>
