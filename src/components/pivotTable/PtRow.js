@@ -1,10 +1,11 @@
 import PtCell from './PtCell'
 
-const PtRow = ({ row }) => {
+const PtRow = ({ row, toggleShowChild }) => {
     return (
         <tr>
             {row && row.map((cell, idx) =>
                 <PtCell
+                    toggleShowChild={toggleShowChild}
                     key={idx}
                     cell={cell} />
             )}

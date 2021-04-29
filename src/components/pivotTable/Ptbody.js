@@ -3,7 +3,8 @@ import { PtCtx } from '../../contexts/PtCtx'
 import PtRow from './PtRow'
 
 const PtBody = () => {
-    const { state: ptState } = useContext(PtCtx)
+    const { state: ptState, toggleShowRowsChild } = useContext(PtCtx)
+
     class Cell {
         constructor({ text = null, className = null, colSpan = null, rowSpan = null, ico = null, node = null }) {
             this.text = text
@@ -59,6 +60,7 @@ const PtBody = () => {
         <tbody>
             {ptState.rowsArray.length > 0 && getTbody().map((row, idx) =>
                 <PtRow
+                    toggleShowChild={toggleShowRowsChild}
                     key={idx}
                     row={row} />
             )}

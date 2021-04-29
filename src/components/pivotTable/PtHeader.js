@@ -3,8 +3,9 @@ import { PtCtx } from "../../contexts/PtCtx"
 import { PtSetCtx } from "../../contexts/PtSetCtx"
 import { useContext } from 'react'
 const PtHeader = () => {
-    const { state: ptState } = useContext(PtCtx)
+    const { state: ptState, toggleShowColChild } = useContext(PtCtx)
     const { state: stState } = useContext(PtSetCtx)
+
     class Header {
         constructor({ text = null, className = null, colSpan = null, rowSpan = null, ico = null, node = null }) {
             this.text = text
@@ -79,6 +80,7 @@ const PtHeader = () => {
         <thead>
             {stState.colSelection && stState.colSelection.length > 0 && getCols().map((row, idx) =>
                 <PtRow
+                    toggleShowChild={toggleShowColChild}
                     key={idx}
                     row={row} />
             )}
