@@ -16,10 +16,10 @@ const PtBody = () => {
         }
     }
 
-    const getRows = (nodes, colspan, rowSpan, isChild, rows) => {
-        let curColSpan = colspan -= 1
+    const getRows = (nodes, colSpan, rowSpan, isChild, rows) => {
+        let curColSpan = colSpan -= 1
         nodes.forEach((node, i) => {
-            let row = getRow(node, colspan, rowSpan, isChild && i === 0)
+            let row = getRow(node, colSpan, rowSpan, isChild && i === 0)
             rows.push(row)
             if (node.children.length > 0 && node.showChildren) {
                 getRows(node.children, curColSpan, node.rowSpan, true, rows)
@@ -39,7 +39,6 @@ const PtBody = () => {
 
     const getRow = (node, colSpan, rowSpan, isChild) => {
         let row = []
-        console.log(rowSpan, node.text)
         if (isChild) {
             row.push(new Cell({ className: "blank-row", rowSpan: rowSpan }))
         }

@@ -6,74 +6,67 @@ const initialState = {
     colsDepth: 1,
     rowsArray: [],
     rowsDepth: 1,
-    valueArray: []
+    valueSelection: []
 }
 
 const PtCtxProvider = props => {
     const [state, setState] = useState(initialState)
 
     const onloadItems = (items, stState) => {
-        let valueArray = getValueArray(stState.valueSelection)
         let cols = getColTree(items, stState.colSelection)
         setState({
             ...state,
-            valueArray: valueArray,
+            valueSelection: stState.valueSelection,
             colsArray: cols,
-            rowsArray: getRowTree(items, stState.rowSelection, stState.valueSelection, true),
+            rowsArray: getRowTree(items, stState.rowSelection, stState.valueSelection,),
         })
     }
 
-    const getValueArray = (valSelect) => {
-        let valArr = []
-        valSelect.forEach(val => {
-            val.valueParam.forEach(vp => {
-                valArr.push(vp + " " + val.text)
-            });
-        })
-        return valArr
-    }
     const getRowTree = (items, grpSelect, valSelect) => {
+        let headers = []
+        getFiltersList(state.colsArray, headers)
         let tree = []
         if (grpSelect.length > 0) {
             const parentUniq = [...new Set(items.map(el => el[grpSelect[0].value]))]
             tree = parentUniq.map((p, ancestorIndex) => {
-                let data = items.filter(it => it[grpSelect[0].value] === p ? it : "")
-                let rowValues = getData(data, valSelect)
+                let grp = grpSelect[0].value
+                let source = items.filter(it => it[grp] === p ? it : "")
                 let parent = {
                     id: String(grpSelect[0].value + p + (Math.round(Math.random() * 100000))),
+                    source: source,
                     colSpan: 0,
                     rowSpan: 0,
                     text: p,
+                    data: getData(source, headers),
                     ancestor: ancestorIndex,
-                    data: rowValues,
                     children: [],
                     showChildren: false
                 }
-                if (grpSelect.length > 1) getRowChildren(data, 1, grpSelect, parent, valSelect, ancestorIndex)
+                if (grpSelect.length > 1) getRowChildren(source, 1, grpSelect, parent, valSelect, ancestorIndex, headers)
                 return parent
             })
         }
         return tree
     }
-    const getRowChildren = (data, grpCurIdx, grpSelect, parent, valSelect, ancestorIndex) => {
+    const getRowChildren = (source, grpCurIdx, grpSelect, parent, valSelect, ancestorIndex, headers) => {
         let grp = grpSelect[grpCurIdx].value
-        let childUniq = [...new Set(data.map(el => el[grp]))]
+        let childUniq = [...new Set(source.map(el => el[grp]))]
         let children = childUniq.map(cu => {
-            let dataChildren = data.filter(it => it[grp] === cu ? it : "")
-            let rowValues = getData(dataChildren, valSelect)
-            console.log(rowValues)
+            let sourceChildren = source.filter(it => it[grp] === cu ? it : "")
             let obj = {
                 id: String(grp + cu + (Math.round(Math.random() * 100000))),
+                source: sourceChildren,
                 colSpan: 0,
                 rowSpan: 0,
                 text: cu,
+                data: getData(sourceChildren, headers),
                 ancestor: ancestorIndex,
-                data: rowValues,
+                parent: null,
                 children: [],
                 showChildren: false
             }
             if (grpCurIdx < grpSelect.length - 1) {
-                getRowChildren(dataChildren, grpCurIdx + 1, grpSelect, obj, valSelect, ancestorIndex)
+                getRowChildren(sourceChildren, grpCurIdx + 1, grpSelect, obj, valSelect, ancestorIndex)
             }
             return obj
         })
@@ -91,6 +84,7 @@ const PtCtxProvider = props => {
                     text: p,
                     selector: grpSelect[0].value,
                     ancestor: ancestorIndex,
+                    parent: null,
                     children: [],
                     showChildren: false,
                     colSpan: 0,
@@ -112,6 +106,7 @@ const PtCtxProvider = props => {
                 text: cu,
                 selector: grp,
                 ancestor: ancestorIndex,
+                parent: parent.id,
                 children: [],
                 showChildren: false,
                 colSpan: 0,
@@ -125,10 +120,68 @@ const PtCtxProvider = props => {
         parent.children = children
     }
 
-    const getData = (items, valSelect = []) => {
-        return valSelect && valSelect.length > 0 ?
-            getDataWithValue(items, valSelect) :
-            getDataWithoutValue(items)
+    const getFiltersList = (nodes, arr, ancestor = null) => {
+        nodes.forEach(node => {
+            if (node.children.length > 0 && node.showChildren) {
+                getFiltersList(node.children, arr, node.ancestor)
+            }
+            let head = [{ id: node.id, text: node.text, selector: node.selector, parent: node.parent, ancestor: ancestor }]
+            if (node.parent !== null) {
+                getFiltersValues(state.colsArray[ancestor], node.parent, head)
+            }
+            arr.push(head)
+        })
+    }
+
+    const getFiltersValues = (nodes, parent, head) => {
+        if (nodes.id === parent) {
+            head.unshift({ text: nodes.text, selector: nodes.selector })
+        }
+        else {
+            for (let node of nodes.children) {
+                if (node.id === parent) {
+                    head.unshift({ text: node.text, selector: node.selector })
+                    if (node.parent !== null) {
+                        getFiltersValues(state.colsArray[node.ancestor], node.parent, head)
+                    }
+                }
+            }
+        }
+    }
+
+    const updateValues = (items) => {
+        let headers = []
+        getFiltersList(items, headers)
+        state.rowsArray.forEach(row => {
+            row.data = getData(row.source, headers)
+        })
+    }
+
+    const getData = (items, headers) => {
+        return state.valueSelection && state.valueSelection.length > 0 ?
+            getDataWithValue(items, state.valueSelection, headers) :
+            getDataWithoutValue(items, headers)
+    }
+
+    const getDataWithValue = (items, valSelect, headers) => {
+        let tot = []
+        if (state.colsArray && state.colsArray.length > 0) {
+            tot = headers.map(cols => {
+                let reduceArr = items
+                let filtItems
+                for (let col of cols) {
+                    filtItems = reduceArr.filter(item => {
+                        return item[col.selector] === col.text
+                    })
+                    reduceArr = filtItems
+                }
+                return computeValues(filtItems, valSelect)
+            })
+        }
+        else {
+            tot = computeValues(items, valSelect)
+        }
+        return tot.flat()
     }
 
     const getDataWithoutValue = (items) => {
@@ -137,36 +190,15 @@ const PtCtxProvider = props => {
         }
         else {
             return state.colsArray.map(val => {
-                // console.log("a", items, val)
-                // getDataRow(items,val)
-                // if (val.children.length >0) getDataRow(items,val)
                 return {
                     value: items.filter(item => item[val.selector] === val.text).length
                 }
             })
         }
     }
-
-    // const getDataRow = (items, val) => {
-    //     return {
-    //         value: items.filter(item => item[val.selector] === val.text).length
-    //     }
-    // }
-
-    const getDataWithValue = (items, valSelect) => {
-        let res = []
-        if (state.colsArray && state.colsArray.length > 0) {
-            res = state.colsArray.map(col => {
-                let filtItems = items.filter(item => item[col.selector] === col.text)
-                return computeValues(filtItems, valSelect)
-            })
-        }
-        else {
-            res = computeValues(items, valSelect)
-        }
-        return res.flat()
+    const round = (num) => {
+        return +(Math.round(num + "e+2") + "e-2");
     }
-
     const computeValues = (items, valSelect) => {
         let arr = valSelect.map(val => {
             return val.valueParam.map(par => {
@@ -176,11 +208,12 @@ const PtCtxProvider = props => {
                     case "SUM":
                         let filteredArraySum = items.map(item => item[val.text])
                         let resSum = filteredArraySum.length > 0 ? filteredArraySum.reduce((a, b) => a += b) : 0
-                        return { value: resSum }
+                        return { value: round(resSum) }
                     case "AVG":
                         let filteredArrayAvg = items.map(item => item[val.text])
                         let resAvg = filteredArrayAvg.length > 0 ? filteredArrayAvg.reduce((a, b) => a += b) / filteredArrayAvg.length : 0
-                        return { value: resAvg }
+                        // return { value: resAvg }
+                        return { value: round(resAvg) }
                     default:
                         return { value: "toto" }
                 }
@@ -230,6 +263,7 @@ const PtCtxProvider = props => {
     const toggleShowColChild = (id, ancestorIndex) => {
         getColsDepth(id, state.colsArray[ancestorIndex])
         getColsLength(state.colsArray[ancestorIndex])
+        updateValues(state.colsArray)
         setState({
             ...state,
             colsDepth: getMaxColsDepth() + 1,
