@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
-import { DtCtx } from '../../contexts/DtCtx'
+import { PgnCtx } from '../../contexts/PgnCtx'
 import { useContext } from 'react'
 const Modal = ({ onSelect, onItemPerPageArray }) => {
-    const { onChangeItemsPerPage } = useContext(DtCtx)
+    const { onChangeItemsPerPage } = useContext(PgnCtx)
     return (
         <ul className='paginat-modal'>
             <h6>Rows per page:</h6>

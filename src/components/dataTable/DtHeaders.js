@@ -1,12 +1,8 @@
-import { useContext } from 'react'
-import { DtCtx } from '../../contexts/DtCtx'
-
-const Headers = () => {
-    const { state } = useContext(DtCtx)
+const Headers = ({ headings }) => {
     return (
         <thead>
             <tr>
-                {state.headings && state.headings.map((heading) =>
+                {headings && headings.map((heading) =>
                     <th key={heading.value} >{heading.text}</th>
                 )}
             </tr>

@@ -118,6 +118,7 @@ font-weight: 400;
 table{
   border-spacing: 0;
   width: 100%;
+  /* border-collapse: collapse; */
 }
 .tableContainer{
   font-size: 0.75rem;
@@ -160,10 +161,56 @@ tbody{
 thead {
   color:#37708d;
   border-radius: 10px;
-  background-color: #EAEAEC;
   box-shadow: inset -2px -3px 3px #bcbcbc9d,
   -1px -1px 6px 1px #fff;
 }
+
+.sub-value:first-child{
+  border-radius:  0 0 0 10px;
+}
+.sub-value:last-child{
+  border-radius: 0 0 10px 0;
+  border:none;
+}
+.master-header-cell:first-child{
+  border-radius: 10px 0 0 0 ;
+}
+.master-header-cell:last-child{
+  border-radius: 0 10px 0 0;
+  border-right:none;
+}
+.thead tr:first-child{
+  border-radius: 10px 0 0 0 ;
+}
+/*Pivot table*/
+.blank-row{
+  background-color: #f7f7f7;
+  border-right: #dddddd solid 1px;
+  width: 5px;
+}
+.sub-value{
+font-size: 0.6rem;
+border-right: #dddddd solid 1px;
+}
+.header-cell{
+  background-color: #EAEAEC; 
+  border-top: #dddddd solid 1px;
+  border-right: #dddddd solid 1px;
+  /* border-radius: 0 10px 0 0 */
+}
+.master-header-cell{
+  background-color: #EAEAEC; 
+  border-right: #dddddd solid 1px;
+}
+
+.header-reminder{
+  background-color: #EAEAEC; 
+  border-right: #dddddd solid 1px;
+}
+.blank-row-chevron{
+  border-right: #dddddd solid 1px;
+}
+
 @keyframes shadow-inset-center {
   50% {
             opacity: 0.5;
@@ -295,13 +342,3 @@ thead {
   border:none
 }
 
-/*Pivot table*/
-.blank-row{
-  background-color: #f7f7f7;
-  border-right: #dddddd solid 1px;
-  width: 5px;
-}
-.blank-row-chevron{
-  background-color: #f7f7f7;
-  /* border-right: #dddddd solid 1px; */
-}

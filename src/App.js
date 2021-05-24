@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react'
-import DtCtxProvider from './contexts/DtCtx'
+import Dashboard from './components/Dashboard'
+import PgnCtxProvider from './contexts/PgnCtx'
 import PtSetCtxProvider from './contexts/PtSetCtx'
 import PtCtxProvider from './contexts/PtCtx'
-import Dt from "./components/dataTable/Dt"
-import Pt from './components/pivotTable/Pt'
-
 const App = () => {
   const [countries, setCountries] = useState([])
 
@@ -22,20 +20,13 @@ const App = () => {
     return data.slice(0, 10)
   }
   return (
-    <DtCtxProvider>
+    <PgnCtxProvider>
       <PtSetCtxProvider>
         <PtCtxProvider>
-          <div className="App">
-            <div className="container">
-              <Dt
-                items={countries}
-              />
-              <Pt />
-            </div>
-          </div>
+          <Dashboard items={countries} />
         </PtCtxProvider>
       </PtSetCtxProvider>
-    </DtCtxProvider>
+    </PgnCtxProvider>
   );
 }
 

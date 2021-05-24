@@ -1,9 +1,9 @@
 import { FiChevronLeft, FiChevronRight, FiChevronDown } from 'react-icons/fi'
 import { useState, useEffect, useRef, useContext } from 'react'
-import { DtCtx } from '../../contexts/DtCtx'
+import { PgnCtx } from '../../contexts/PgnCtx'
 import Modal from './Modal'
-const Pagination = () => {
-    const { onPageChange, state } = useContext(DtCtx)
+const Pagination = ({ itemLength }) => {
+    const { onPageChange, onInit, state } = useContext(PgnCtx)
     const [showModal, setshowModal] = useState(false)
     const ref = useRef(null);
     const handleClickOutside = (event) => {
@@ -12,7 +12,11 @@ const Pagination = () => {
         }
     };
     useEffect(() => {
-        console.log('page')
+        onInit(itemLength)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [itemLength])
+
+    useEffect(() => {
         document.addEventListener('click', handleClickOutside, true);
         return () => {
             document.removeEventListener('click', handleClickOutside, true);

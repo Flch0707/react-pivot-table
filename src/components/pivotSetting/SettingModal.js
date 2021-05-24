@@ -1,21 +1,19 @@
 import { ListSelection } from './ListSelection'
 import Button from '../Button'
-import { useContext, useEffect } from 'react'
+import { useEffect, useContext } from 'react'
 import { PtSetCtx } from '../../contexts/PtSetCtx'
 const SettingModal = ({ headings, showModal }) => {
     const { state, onLoadColumns } = useContext(PtSetCtx)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(() => { onLoadColumns(headings) }, [])
-
+    useEffect(() => {
+        onLoadColumns(headings)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
     return (
         <div className="setting-modal">
             <div className="setting-modal-container">
                 <div style={{ display: 'flex', justifyContent: 'space-between', maxHeight: '10vh' }}>
                     <h2>{"Pivot table setting:"}</h2>
                     <div>
-                        <Button
-                            onClick={showModal}
-                            icoName='FiPlay'></Button>
                         <Button
                             onClick={showModal}
                             icoName='FiX'></Button>

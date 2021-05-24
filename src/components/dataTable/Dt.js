@@ -1,23 +1,31 @@
 import Pagination from '../pagination/Pagination'
 import DtHeaders from './DtHeaders'
 import DtBody from './DtBody'
-import { useEffect, useContext } from 'react'
-import { DtCtx } from '../../contexts/DtCtx'
-import DtSetBar from './DtSetBar'
-const DataTable = ({ items, CustomHeadings }) => {
-    const { onloadItems, state } = useContext(DtCtx)
+
+import { useEffect, useContext, useState } from 'react'
+import { PgnCtx } from '../../contexts/PgnCtx'
+const DataTable = ({ items, headings }) => {
+    const { state: PgnState } = useContext(PgnCtx)
+    const [rows, setRows] = useState([])
+
     useEffect(() => {
-        onloadItems(items, CustomHeadings)
-    }, [items, CustomHeadings])
+        const getRows = () => {
+            setRows([...items.slice((PgnState.itemsPerPage * (PgnState.currentPage - 1)), PgnState.itemsPerPage * PgnState.currentPage)])
+        }
+        getRows()
+    }, [items, PgnState])
 
     return (
         <div className='tableContainer'>
-            <DtSetBar headings={state.headings}></DtSetBar>
             <table>
-                <DtHeaders />
-                <DtBody rows={state.pageItems} />
+                <DtHeaders headings={headings} />
+                <DtBody
+                    headings={headings}
+                    rows={rows} />
             </table>
-            <Pagination />
+            <Pagination
+                itemLength={items && items.length}
+            />
         </div>
     )
 }

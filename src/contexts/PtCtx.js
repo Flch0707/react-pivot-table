@@ -14,11 +14,13 @@ const PtCtxProvider = props => {
 
     const onloadItems = (items, stState) => {
         let cols = getColTree(items, stState.colSelection)
+        let rows = getRowTree(items, stState.rowSelection, stState.valueSelection)
+        getValueTree(cols, rows, stState.valueSelection)
         setState({
             ...state,
             valueSelection: stState.valueSelection,
             colsArray: cols,
-            rowsArray: getRowTree(items, stState.rowSelection, stState.valueSelection,),
+            rowsArray: rows
         })
     }
 
@@ -37,7 +39,7 @@ const PtCtxProvider = props => {
                     colSpan: 0,
                     rowSpan: 0,
                     text: p,
-                    data: getData(source, headers),
+                    // data: getData(source, headers),
                     ancestor: ancestorIndex,
                     children: [],
                     showChildren: false
@@ -59,7 +61,7 @@ const PtCtxProvider = props => {
                 colSpan: 0,
                 rowSpan: 0,
                 text: cu,
-                data: getData(sourceChildren, headers),
+                // data: getData(sourceChildren, headers),
                 ancestor: ancestorIndex,
                 parent: null,
                 children: [],
@@ -120,20 +122,21 @@ const PtCtxProvider = props => {
         parent.children = children
     }
 
-    const getFiltersList = (nodes, arr, ancestor = null) => {
+    const getFiltersList = (nodes, arr, cols = null, ancestor = null) => {
+        cols = cols === null ? nodes : cols
         nodes.forEach(node => {
             if (node.children.length > 0 && node.showChildren) {
-                getFiltersList(node.children, arr, node.ancestor)
+                getFiltersList(node.children, arr, cols, node.ancestor)
             }
             let head = [{ id: node.id, text: node.text, selector: node.selector, parent: node.parent, ancestor: ancestor }]
             if (node.parent !== null) {
-                getFiltersValues(state.colsArray[ancestor], node.parent, head)
+                getFiltersValues(cols[ancestor], cols, node.parent, head)
             }
             arr.push(head)
         })
     }
 
-    const getFiltersValues = (nodes, parent, head) => {
+    const getFiltersValues = (nodes, cols, parent, head) => {
         if (nodes.id === parent) {
             head.unshift({ text: nodes.text, selector: nodes.selector })
         }
@@ -142,30 +145,36 @@ const PtCtxProvider = props => {
                 if (node.id === parent) {
                     head.unshift({ text: node.text, selector: node.selector })
                     if (node.parent !== null) {
-                        getFiltersValues(state.colsArray[node.ancestor], node.parent, head)
+                        getFiltersValues(cols[node.ancestor], cols, node.parent, head)
                     }
                 }
             }
         }
     }
-
-    const updateValues = (items) => {
-        let headers = []
-        getFiltersList(items, headers)
-        state.rowsArray.forEach(row => {
-            row.data = getData(row.source, headers)
+    const updateRowValue = (rows, headers, cols, valSelect) => {
+        rows.forEach(row => {
+            row.data = getData(row.source, headers, cols, valSelect)
+            if (row.children.length > 0 && row.showChildren) {
+                updateRowValue(row.children, headers, cols, valSelect)
+            }
         })
     }
 
-    const getData = (items, headers) => {
-        return state.valueSelection && state.valueSelection.length > 0 ?
-            getDataWithValue(items, state.valueSelection, headers) :
-            getDataWithoutValue(items, headers)
+    const getValueTree = (cols, rows, valSelect) => {
+        let headers = []
+        getFiltersList(cols, headers)
+        updateRowValue(rows, headers, cols, valSelect)
     }
 
-    const getDataWithValue = (items, valSelect, headers) => {
+    const getData = (items, headers, cols, valSelect) => {
+        return valSelect && valSelect.length > 0 ?
+            getDataWithValue(items, valSelect, headers, cols) :
+            getDataWithoutValue(items, headers, cols)
+    }
+
+    const getDataWithValue = (items, valSelect, headers, cols) => {
         let tot = []
-        if (state.colsArray && state.colsArray.length > 0) {
+        if (cols && cols.length > 0) {
             tot = headers.map(cols => {
                 let reduceArr = items
                 let filtItems
@@ -184,12 +193,12 @@ const PtCtxProvider = props => {
         return tot.flat()
     }
 
-    const getDataWithoutValue = (items) => {
-        if (state.colsArray && state.colsArray.length === 0) {
+    const getDataWithoutValue = (items, cols) => {
+        if (cols && cols.length === 0) {
             return [{ value: items.length }]
         }
         else {
-            return state.colsArray.map(val => {
+            return cols.map(val => {
                 return {
                     value: items.filter(item => item[val.selector] === val.text).length
                 }
@@ -212,7 +221,6 @@ const PtCtxProvider = props => {
                     case "AVG":
                         let filteredArrayAvg = items.map(item => item[val.text])
                         let resAvg = filteredArrayAvg.length > 0 ? filteredArrayAvg.reduce((a, b) => a += b) / filteredArrayAvg.length : 0
-                        // return { value: resAvg }
                         return { value: round(resAvg) }
                     default:
                         return { value: "toto" }
@@ -226,6 +234,7 @@ const PtCtxProvider = props => {
     const toggleShowRowsChild = (id, ancestorIndex) => {
         getColSpan(id, state.rowsArray[ancestorIndex])
         getRowSpan(state.rowsArray[ancestorIndex])
+        getValueTree(state.colsArray, [state.rowsArray[ancestorIndex]], state.valueSelection)
         setState({
             ...state,
             rowsDepth: getMaxColSpan() + 1,
@@ -263,7 +272,7 @@ const PtCtxProvider = props => {
     const toggleShowColChild = (id, ancestorIndex) => {
         getColsDepth(id, state.colsArray[ancestorIndex])
         getColsLength(state.colsArray[ancestorIndex])
-        updateValues(state.colsArray)
+        getValueTree(state.colsArray, state.rowsArray, state.valueSelection)
         setState({
             ...state,
             colsDepth: getMaxColsDepth() + 1,

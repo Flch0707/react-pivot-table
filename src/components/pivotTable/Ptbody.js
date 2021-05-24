@@ -6,13 +6,14 @@ const PtBody = () => {
     const { state: ptState, toggleShowRowsChild } = useContext(PtCtx)
 
     class Cell {
-        constructor({ text = null, className = null, colSpan = null, rowSpan = null, ico = null, node = null }) {
+        constructor({ text = null, className = null, colSpan = null, rowSpan = null, ico = null, node = null, td = null }) {
             this.text = text
             this.className = className
             this.colSpan = colSpan
             this.rowSpan = rowSpan
             this.ico = ico
             this.node = node
+            this.td = td
         }
     }
 
@@ -44,7 +45,7 @@ const PtBody = () => {
         }
         row.push(getRowHeader(node, colSpan))
         node.data && node.data.forEach(data => {
-            row.push(new Cell({ text: data.value }))
+            row.push(new Cell({ text: data.value, td: true }))
         })
         return row
     }

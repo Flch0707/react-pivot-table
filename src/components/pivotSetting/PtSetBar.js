@@ -2,7 +2,7 @@ import Button from '../Button'
 import { useState } from 'react'
 import SettingModal from '../pivotSetting/SettingModal'
 
-const DtSetBar = ({ headings }) => {
+const PtSetBar = ({ headings }) => {
     const [showModal, setshowModal] = useState(false)
 
     return (
@@ -21,4 +21,4 @@ const DtSetBar = ({ headings }) => {
     )
 }
 
-export default DtSetBar
+export default PtSetBar

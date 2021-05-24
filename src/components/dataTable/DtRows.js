@@ -1,12 +1,7 @@
-import { useContext } from 'react'
-import { DtCtx } from '../../contexts/DtCtx'
-
-const DtRows = ({ row }) => {
-    const { state } = useContext(DtCtx)
-
+const DtRows = ({ row, headings }) => {
     return (
         <tr>
-            {state.headings.map((heading, i) =>
+            {headings && headings.map((heading, i) =>
                 <td key={i}>
                     {row[heading.value] === undefined ? 0 : String(row[heading.value])}
                 </td>

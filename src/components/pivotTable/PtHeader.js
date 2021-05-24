@@ -33,11 +33,11 @@ const PtHeader = () => {
         let objCols = {}
         // create as many properties as there are rows in the header
         stState.colSelection.forEach((col, i) => {
-            if (i < ptState.colsDepth) objCols[col.value] = [new Header({ colSpan: ptState.rowsDepth })]
+            if (i < ptState.colsDepth) objCols[col.value] = [new Header({ colSpan: ptState.rowsDepth, className: i === 0 ? "master-header-cell" : undefined })]
         })
         // get values for each header
         ptState.colsArray && ptState.colsArray.forEach((col) => {
-            objCols[col.selector] && objCols[col.selector].push(getColHeader(col, ptState.colsDepth, subHeaderLenth))
+            objCols[col.selector] && objCols[col.selector].push(getColHeader(col, ptState.colsDepth, subHeaderLenth, "master-header-cell"))
             // Look for children nodes and get the values
             if (col.children.length > 0 && col.showChildren) getChildren(col, ptState.colsDepth, objCols, subHeaderLenth)
         })
@@ -55,28 +55,28 @@ const PtHeader = () => {
             // add parent at the end of the selection
             if (i === node.children.length - 1) {
                 objCols[col.selector].push(
-                    new Header({ text: String(node.text), className: "blank", colSpan: subHeaderLenth, rowSpan: accu !== 0 ? accu : 1 }))
+                    new Header({ text: String(node.text), className: "header-reminder", colSpan: subHeaderLenth, rowSpan: accu !== 0 ? accu : 1 }))
             }
             if (col.children.length > 0 && col.showChildren) getChildren(col, accu, objCols, subHeaderLenth)
         })
     }
-    const getColHeader = (node, rowSpan, subHeaderLenth) => {
+    const getColHeader = (node, rowSpan, subHeaderLenth, className = "header-cell") => {
         if (node.children.length > 0) {
             if (node.showChildren) {
-                return new Header({ text: String(node.text), className: "blank-row", colSpan: (node.colSpan + 1) * subHeaderLenth, ico: "FiChevronDown", node: node })
+                return new Header({ text: String(node.text), className: className, colSpan: (node.colSpan + 1) * subHeaderLenth, ico: "FiChevronDown", node: node })
             }
             else {
-                return new Header({ text: String(node.text), rowSpan: rowSpan !== 0 ? rowSpan : 1, colSpan: (node.colSpan + 1) * subHeaderLenth, ico: "FiChevronRight", node: node })
+                return new Header({ text: String(node.text), className: className, rowSpan: rowSpan !== 0 ? rowSpan : 1, colSpan: (node.colSpan + 1) * subHeaderLenth, ico: "FiChevronRight", node: node })
             }
         }
         else {
-            return new Header({ text: String(node.text), rowSpan: rowSpan !== 0 ? rowSpan : 1, colSpan: (node.colSpan + 1) * subHeaderLenth })
+            return new Header({ text: String(node.text), className: className, rowSpan: rowSpan !== 0 ? rowSpan : 1, colSpan: (node.colSpan + 1) * subHeaderLenth })
         }
     }
     // returns array of selected value to compute
     const getSubValues = (valueArray) => {
         let valArr = valueArray && valueArray.map((v) => {
-            return new Header({ text: v, className: "blank-row" })
+            return new Header({ text: v, className: "sub-value" })
         })
         let valRow = []
         valRow = ptState.colsArray && ptState.colsArray.flatMap(col => {
@@ -86,7 +86,7 @@ const PtHeader = () => {
             }
             return colVal
         })
-        valRow.unshift(new Header({ colSpan: ptState.rowsDepth }))
+        valRow.unshift(new Header({ colSpan: ptState.rowsDepth, className: "sub-value" }))
         return valRow
     }
     return (
