@@ -123,10 +123,10 @@ table{
 .tableContainer{
   font-size: 0.75rem;
   padding: 1rem;
-  border-radius: 30px;
+  /* border-radius: 30px;
   background: #f2f2f2;
   box-shadow: inset -2px -3px 3px #bcbcbc9d,
-  -1px -1px 6px 1px #fff;
+  -1px -1px 6px 1px #fff; */
 overflow: auto;
 }
 th{
@@ -141,7 +141,7 @@ td,th{
   padding: 0.7rem;
   white-space: nowrap
 }
-tbody tr:first-child{
+/* tbody tr:first-child{
   border-radius: 10px 10px 0 0;
 }
 tbody tr:last-child{
@@ -181,7 +181,7 @@ thead {
 }
 .thead tr:first-child{
   border-radius: 10px 0 0 0 ;
-}
+} */
 /*Pivot table*/
 .blank-row{
   background-color: #f7f7f7;
