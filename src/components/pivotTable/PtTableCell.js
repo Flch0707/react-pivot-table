@@ -3,7 +3,7 @@ const PtTableCell = ({ cell }) => {
         <td
             className={cell.className && cell.className}
             colSpan={cell.colSpan && cell.colSpan}
-            rowSpan={cell.rowSpan && cell.rowSpan}>{cell.text}
+            rowSpan={cell.rowSpan && cell.rowSpan}>{String(cell.text)}
         </td>
     )
 }

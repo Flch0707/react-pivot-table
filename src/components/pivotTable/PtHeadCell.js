@@ -8,7 +8,7 @@ const PtHeadCell = ({ cell, toggleShowChild }) => {
             colSpan={cell.colSpan && cell.colSpan}
             rowSpan={cell.rowSpan && cell.rowSpan}>
             {cell.ico && (cell.ico === "FiChevronRight" ? <FiChevronRight /> : <FiChevronDown />)}
-            {cell && cell.text}</th>
+            {cell.text !== null ? String(cell.text) : ""}</th>
         // <th
         //     colSpan={cell.colSpan && cell.colSpan}
         //     rowSpan={cell.rowSpan && cell.rowSpan}
